@@ -4,7 +4,7 @@ This is a TypeScript-translated fork of [react-native-swipeable](https://https:/
 
 A powerful React Native swipe component.  Supports both iOS and Android.
 
-<img src="https://raw.githubusercontent.com/padlet/react-native-swipeable/master/demo.gif" width="310">
+<img src="https://github.com/padlet/react-native-swipeable/blob/master/demo.gif" width="310">
 
 ## Installation
 
@@ -95,7 +95,7 @@ pod install
 yarn example react-native run-ios # or run-android
 ```
 
-<img src="https://raw.githubusercontent.com/padlet/react-native-swipeable/master/example/example.ios.gif" width="275"> <img src="https://raw.githubusercontent.com/padlet/react-native-swipeable/master/example/example.android.gif" width="275">
+<img src="https://github.com/padlet/react-native-swipeable/blob/master/example/example.ios.gif" width="275"> <img src="https://github.com/padlet/react-native-swipeable/blob/master/example/example.android.gif" width="275">
 
 ## Common Issues
 
