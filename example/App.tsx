@@ -1,118 +1,187 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
-
-import React from 'react';
+import React, { Component } from 'react'
 import {
-  SafeAreaView,
-  StyleSheet,
+  GestureResponderEvent,
+  PanResponderGestureState,
   ScrollView,
-  View,
+  StyleSheet,
   Text,
-  StatusBar,
-} from 'react-native';
+  TouchableOpacity,
+  View
+} from 'react-native'
+import Swipeable from '@padlet/react-native-swipeable'
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+type AppState = {
+  currentlyOpenSwipeable: Swipeable | null
+}
+export default class App extends Component<{}, AppState> {
+  constructor(props: {}) {
+    super(props)
+    this.state = {
+      currentlyOpenSwipeable: null
+    }
+  }
 
-declare const global: {HermesInternal: null | {}};
+  handleScroll = () => {
+    const { currentlyOpenSwipeable } = this.state
 
-const App = () => {
+    if (currentlyOpenSwipeable) {
+      currentlyOpenSwipeable.recenter()
+    }
+  }
+
+  render() {
+    const { currentlyOpenSwipeable } = this.state
+    const itemProps: ExampleProps = {
+      onOpen: (event, gestureState, swipeable) => {
+        if (currentlyOpenSwipeable && currentlyOpenSwipeable !== swipeable) {
+          currentlyOpenSwipeable.recenter()
+        }
+
+        this.setState({ currentlyOpenSwipeable: swipeable })
+      },
+      onClose: () => this.setState({ currentlyOpenSwipeable: null })
+    }
+
+    return (
+      <ScrollView onScroll={this.handleScroll} style={styles.container}>
+        <Example1 {...itemProps} />
+        <Example2 {...itemProps} />
+        <Example3 {...itemProps} />
+      </ScrollView>
+    )
+  }
+}
+
+type ExampleProps = {
+  onOpen: (event: GestureResponderEvent, gestureState: PanResponderGestureState, swipeable: Swipeable) => void
+  onClose: () => void
+}
+
+const Example1: React.FC<ExampleProps> = ({ onOpen, onClose }) => {
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+    <Swipeable
+      leftContent={
+        <View style={[styles.leftSwipeItem, { backgroundColor: 'lightskyblue' }]}>
+          <Text>Pull action</Text>
+        </View>
+      }
+      rightButtons={[
+        <TouchableOpacity style={[styles.rightSwipeItem, { backgroundColor: 'lightseagreen' }]}>
+          <Text>1</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.rightSwipeItem, { backgroundColor: 'orchid' }]}>
+          <Text>2</Text>
+        </TouchableOpacity>
+      ]}
+      onRightButtonsOpenRelease={onOpen}
+      onRightButtonsCloseRelease={onClose}
+    >
+      <View style={[styles.listItem, { backgroundColor: 'salmon' }]}>
+        <Text>Example 1</Text>
+      </View>
+    </Swipeable>
+  )
+}
+
+const Example2: React.FC<ExampleProps> = ({ onOpen, onClose }) => {
+  return (
+    <Swipeable
+      leftButtonWidth={45}
+      leftButtons={[
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'papayawhip' }]}>
+          <Text>1</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'olivedrab' }]}>
+          <Text>2</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'mistyrose' }]}>
+          <Text>3</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'mediumaquamarine' }]}>
+          <Text>4</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'lightslategray' }]}>
+          <Text>5</Text>
+        </TouchableOpacity>,
+        <TouchableOpacity style={[styles.leftSwipeItem, { backgroundColor: 'ivory' }]}>
+          <Text>6</Text>
+        </TouchableOpacity>
+      ]}
+      rightContent={
+        <View style={[styles.rightSwipeItem, { backgroundColor: 'linen' }]}>
+          <Text>Pull action</Text>
+        </View>
+      }
+      onLeftButtonsOpenRelease={onOpen}
+      onLeftButtonsCloseRelease={onClose}
+    >
+      <View style={[styles.listItem, { backgroundColor: 'paleturquoise' }]}>
+        <Text>Example 2</Text>
+      </View>
+    </Swipeable>
+  )
+}
+
+type Example3State = {
+  leftActionActivated: boolean
+  toggle: boolean
+}
+
+class Example3 extends Component<ExampleProps, Example3State> {
+  state = {
+    leftActionActivated: false,
+    toggle: false
+  }
+
+  render() {
+    const { leftActionActivated, toggle } = this.state
+
+    return (
+      <Swipeable
+        leftActionActivationDistance={200}
+        leftContent={
+          <View
+            style={[
+              styles.leftSwipeItem,
+              {
+                backgroundColor: leftActionActivated ? 'lightgoldenrodyellow' : 'steelblue'
+              }
+            ]}
+          >
+            {leftActionActivated ? <Text>release!</Text> : <Text>keep pulling!</Text>}
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+        }
+        onLeftActionActivate={() => this.setState({ leftActionActivated: true })}
+        onLeftActionDeactivate={() => this.setState({ leftActionActivated: false })}
+        onLeftActionComplete={() => this.setState({ toggle: !toggle })}
+      >
+        <View style={[styles.listItem, { backgroundColor: toggle ? 'thistle' : 'darkseagreen' }]}>
+          <Text>Example 3</Text>
+        </View>
+      </Swipeable>
+    )
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    paddingTop: 20
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  listItem: {
+    height: 75,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  body: {
-    backgroundColor: Colors.white,
+  leftSwipeItem: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingRight: 20
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
-
-export default App;
+  rightSwipeItem: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 20
+  }
+})

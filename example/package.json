@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "padlet-swipeable-example",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@padlet/react-native-swipeable": "^1.0.0",
     "react": "16.13.1",
     "react-native": "0.63.3"
   },

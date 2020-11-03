@@ -93,7 +93,6 @@ export type SwipeableProps = {
   }
 
 type SwipeableState = {
-  pan: Animated.ValueXY
   width: number
   lastOffset: { x: number; y: number }
   leftActionActivated: boolean
@@ -105,6 +104,16 @@ type SwipeableState = {
 }
 
 export default class Swipeable extends PureComponent<SwipeableProps, SwipeableState> {
+  private pan = new Animated.ValueXY()
+  private unmounted = false
+  private handlePan = Animated.event([
+    null,
+    {
+      dx: this.pan.x,
+      dy: this.pan.y,
+    },
+  ])
+
   static defaultProps: SwipeableProps = {
     leftContent: null,
     rightContent: null,
@@ -179,7 +188,6 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
   constructor(props: SwipeableProps) {
     super(props)
     this.state = {
-      pan: new Animated.ValueXY(),
       width: 0,
       lastOffset: { x: 0, y: 0 },
       leftActionActivated: false,
@@ -195,7 +203,7 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
     const { onPanAnimatedValueRef, onRef } = this.props
 
     onRef(this)
-    onPanAnimatedValueRef(this.state.pan)
+    onPanAnimatedValueRef(this.pan)
   }
 
   componentWillUnmount() {
@@ -203,11 +211,11 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
   }
 
   recenter = (
-    animationFn = this.props.swipeReleaseAnimationFn,
-    animationConfig = this.props.swipeReleaseAnimationConfig,
-    onDone: Parameters<Animated.CompositeAnimation['start']>[0]
+    animationFn: SwipeableAnimationFn<Animated.TimingAnimationConfig> = this.props.swipeReleaseAnimationFn,
+    animationConfig: Animated.TimingAnimationConfig = this.props.swipeReleaseAnimationConfig,
+    onDone: Parameters<Animated.CompositeAnimation['start']>[0] = undefined
   ) => {
-    const { pan } = this.state
+    const { pan } = this
 
     this.setState({
       lastOffset: { x: 0, y: 0 },
@@ -224,21 +232,12 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
     animationFn(pan, animationConfig).start(onDone)
   }
 
-  private unmounted = false
-
-  private handlePan = Animated.event([
-    null,
-    {
-      dx: this.state.pan.x,
-      dy: this.state.pan.y,
-    },
-  ])
-
   private handleMoveShouldSetPanResponder = (event: GestureResponderEvent, gestureState: PanResponderGestureState) =>
     Math.abs(gestureState.dx) > this.props.swipeStartMinDistance
 
   private handlePanResponderStart = (event: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-    const { lastOffset, pan } = this.state
+    const { lastOffset } = this.state
+    const { pan } = this
 
     pan.setOffset(lastOffset)
     this.props.onSwipeStart?.(event, gestureState, this)
@@ -358,8 +357,8 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
       rightActionActivated,
       rightButtonsOpen,
       rightButtonsActivated,
-      pan,
     } = this.state
+    const { pan } = this
     const animationFn = this.getReleaseAnimationFn()
     const animationConfig = this.getReleaseAnimationConfig()
 
@@ -612,7 +611,8 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
     const buttons = props.buttons || []
     const { isLeftButtons } = props
     const { leftButtonContainerStyle, rightButtonContainerStyle } = this.props
-    const { pan, width } = this.state
+    const { width } = this.state
+    const { pan } = this
     const canSwipeLeft = this.canSwipeLeft()
     const canSwipeRight = this.canSwipeRight()
     const count = buttons.length
@@ -663,7 +663,8 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
       style,
       ...props
     } = this.props
-    const { pan, width } = this.state
+    const { width } = this.state
+    const { pan } = this
     const canSwipeLeft = this.canSwipeLeft()
     const canSwipeRight = this.canSwipeRight()
     const transform = [
