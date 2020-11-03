@@ -199,7 +199,7 @@ export default class Swipeable extends PureComponent<SwipeableProps, SwipeableSt
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { onPanAnimatedValueRef, onRef } = this.props
 
     onRef(this)
